@@ -17,7 +17,7 @@ Alguns desses tópicos exigem reescrita de código, refatorações e divisão do
 
 ### Fase 1
 
-  - Aplicação monolítica .Net Core com <Banco de Dados Aqui>  
+  - Aplicação monolítica .Net Core com Banco de Dados  
   - Arquitetura Hexagonal (Ports and Adapters)  
   - Brainstorming de Domain Driven Design (DDD)  
 
