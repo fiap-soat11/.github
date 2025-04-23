@@ -49,5 +49,6 @@ Os repositórios desta organização seguem majoritariamente o versionamento sem
 ## Integrantes do grupo
 - [AdinaildoRibeiro](https://github.com/AdinaildoRibeiro)
 - [EderGRocha](https://github.com/EderGRocha)
-- [mandstoni](https://github.com/mandstoni)  
+- [mandstoni](https://github.com/mandstoni)
+- [MarioSergio07](https://github.com/MarioSergio07)
 - [renaildos](https://github.com/renaildos)  
