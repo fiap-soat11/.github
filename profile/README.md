@@ -13,17 +13,25 @@ O projeto, assim como o curso, é dividido em várias 'fases', cada uma abordand
 Alguns desses tópicos exigem reescrita de código, refatorações e divisão dos repositórios.
 
 <details>
-  <summary>Detalhes e diagramas de cada fase</summary>
+  <summary>Documentação de cada fase</summary>
 
 ### Fase 1
 
-  - Aplicação monolítica .Net Core com Banco de Dados  
-  - Arquitetura Hexagonal (Ports and Adapters)  
-  - Brainstorming de Domain Driven Design (DDD)  
-
 <details>
-  <summary>Diagramas DDD</summary>
+
+  - Aplicação monolítica .Net Core com Banco de Dados Mysql  
   
+  - [Event Storming (DDD)](https://miro.com/app/board/uXjVIG95Hyw=/)
+    
+  - [Linguagem Ubíqua](https://github.com/fiap-soat11/.github/wiki/Linguagem-Ub%C3%ADqua)
+  
+  - [Arquitetura Hexagonal (Ports and Adapters)](https://github.com/fiap-soat11/.github/wiki)
+    
+    ![DAS](/fase1/docs/DAS.png)
+    
+  - [Modelo de entidade relacional](https://github.com/fiap-soat11/.github/wiki/Modelo-de-dados)
+  
+    ![MER](/fase1/docs/MER.png)
 
 </details> 
 
