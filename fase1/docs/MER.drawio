@@ -73,6 +73,9 @@
                 <mxCell id="24" value="descricao: VARCHAR(200)" style="shape=partialRectangle;html=1;align=left;spacingLeft=10;" parent="21" vertex="1">
                     <mxGeometry y="90" width="200" height="30" as="geometry"/>
                 </mxCell>
+                <mxCell id="210" value="ativo: TINYINT(1)" style="shape=partialRectangle;html=1;align=left;spacingLeft=10;" parent="21" vertex="1">
+                    <mxGeometry y="60" width="200" height="30" as="geometry"/>
+                </mxCell>
                 <mxCell id="25" value="Status_Pagamento" style="shape=table;startSize=30;container=1;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=1;align=center;resizeLast=1;html=1;whiteSpace=wrap;" parent="1" vertex="1">
                     <mxGeometry x="915" y="645" width="200" height="90" as="geometry"/>
                 </mxCell>
