@@ -33,6 +33,8 @@ Alguns desses tópicos exigem reescrita de código, refatorações e divisão do
   
     ![MER](/fase1/docs/MER.png)
 
+  - [Plano de Testes](/fase1/docs/plano-de-testes.md)
+
 </details> 
 
 ### Fase 2
