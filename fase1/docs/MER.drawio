@@ -99,12 +99,15 @@
                 </mxCell>
                 <mxCell id="32" value="id_forma_pagamento: INT FK" style="shape=partialRectangle;html=1;align=left;spacingLeft=10;" parent="28" vertex="1">
                     <mxGeometry y="120" width="200" height="30" as="geometry"/>
-                </mxCell>
+                </mxCell>                
                 <mxCell id="33" value="valor_pago: DECIMAL(10,2)" style="shape=partialRectangle;html=1;align=left;spacingLeft=10;" parent="28" vertex="1">
                     <mxGeometry y="150" width="200" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="34" value="id_status_pagamento: INT FK" style="shape=partialRectangle;html=1;align=left;spacingLeft=10;" parent="28" vertex="1">
                     <mxGeometry y="180" width="200" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="232" value="tentativa: INT" style="shape=partialRectangle;html=1;align=left;spacingLeft=10;" parent="28" vertex="1">
+                    <mxGeometry y="210" width="200" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="35" value="Produto" style="shape=table;startSize=30;container=1;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=1;align=center;resizeLast=1;html=1;whiteSpace=wrap;fillColor=#CCE8FF;" parent="1" vertex="1">
                     <mxGeometry x="450" y="570" width="200" height="210" as="geometry"/>
