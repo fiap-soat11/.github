@@ -19,7 +19,8 @@ Alguns desses tópicos exigem reescrita de código, refatorações e divisão do
 
 <details>
 
-  - Aplicação monolítica .Net Core com Banco de Dados Mysql  
+
+  - Aplicação monolítica .Net Core em Arquitetura Hexagonal com Banco de Dados Mysql  
   
   - [Event Storming (DDD)](https://miro.com/app/board/uXjVIG95Hyw=/)
     
@@ -39,6 +40,20 @@ Alguns desses tópicos exigem reescrita de código, refatorações e divisão do
 
 ### Fase 2
 
+<details>
+
+  - Aplicação monolítica .Net Core em Arquitetura Limpa com Banco de Dados Mysql  
+    
+    ![Diagrama de Arquitetura de Software](/fase2/docs/DAS.png)
+    
+  - Diagrama de Implantação com Kubernetes
+  
+    ![Kubernetes](/fase2/docs/K8S.png)
+
+  - DEVOPS com Github Actions integrado ao Dockerhub
+    ![Pipeline](/fase2/docs/DEVOPS.png)
+
+</details> 
 
 ### Fase 3
 
