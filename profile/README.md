@@ -42,16 +42,116 @@ Alguns desses tópicos exigem reescrita de código, refatorações e divisão do
 
 <details>
 
-  - Aplicação monolítica .Net Core em Arquitetura Limpa com Banco de Dados Mysql  
-    
-    ![Diagrama de Arquitetura de Software](/fase2/docs/DAS.png)
-    
-  - Diagrama de Implantação com Kubernetes
-  
-    ![Kubernetes](/fase2/docs/K8S.png)
+#### Aplicação monolítica .Net Core em Arquitetura Limpa com Banco de Dados Mysql  
 
-  - DEVOPS com Github Actions integrado ao Dockerhub
-    ![Pipeline](/fase2/docs/DEVOPS.png)
+  ![Diagrama de Arquitetura de Software](/fase2/docs/DAS.png)
+
+  ---
+
+  **Descrição das Camadas**
+
+  **1️⃣ Domain (Entidades de Negócio)**
+  > Contém as entidades e as regras de negócio mais fundamentais do sistema.  
+  > Essa camada é totalmente isolada e não depende de nenhuma tecnologia ou framework externo.  
+  > Exemplo: Entidades como `Pedido`, `Cliente`, `Produto`.
+
+  ---
+
+  **2️⃣ Application (Casos de Uso)**
+  > Define os fluxos de interação do sistema de forma independente de qualquer tecnologia.  
+  > Contém os casos de uso da aplicação, orquestrando as regras de negócio para atender as necessidades dos usuários.  
+  > Exemplo: CriarPedido, CalcularValorPedido.
+
+  ---
+
+  **3️⃣ Adapters (Controladores, Gateways, Presenters)**
+  > Fazem a ponte entre o mundo externo (interfaces, bancos, APIs) e a aplicação.  
+  > Realizam a orquestração dos casos de uso e a conversão de dados (DTOs).  
+  > Inclui os **Controllers**, **Gateways** e **Presenters**.
+
+  - **Controllers:** expõem a API e recebem as requisições.
+  - **Gateways:** realizam integrações com bancos de dados ou serviços externos.
+  - **Presenters:** formatam as respostas para o exterior (DTOs).
+
+  ---
+
+  **4️⃣ Datasource (Banco de Dados)**
+  > Implementações concretas de acesso a dados, como repositórios e entidades de persistência.  
+  > No caso deste projeto, utiliza-se o **MySQL** para armazenamento dos dados.
+
+  ---
+
+  **5️⃣ WebAPI / Swagger (Interface Externa)**
+  > Interface Web responsável por expor as funcionalidades principais da aplicação.  
+  > Permite a integração de sistemas ou o uso via ferramentas como Swagger para testes e documentação da API.
+
+  ---
+
+  **Fluxo Geral**
+
+  1. O usuário faz uma requisição pela **WebAPI**.
+  2. O **Controller** encaminha a requisição para o caso de uso correspondente na camada de **Application**.
+  3. O caso de uso manipula as **Entidades de Negócio (Domain)** conforme a regra definida.
+  4. Quando necessário, o caso de uso acessa os dados através dos **Gateways** que se comunicam com a camada de **Datasource**.
+  5. A resposta é formatada pelos **Presenters** e devolvida pela API.
+
+    
+    
+#### Diagrama de Implantação com Kubernetes
+  
+  ![Kubernetes](/fase2/docs/K8S.png)
+
+**1️⃣ Acesso Externo via Ingress Controller**
+- O acesso à aplicação é realizado externamente através de uma **URL pública**, roteada por um **Ingress Controller (ing)**, que direciona as requisições HTTP/HTTPS para os serviços internos do cluster.
+
+---
+
+**2️⃣ Service e Load Balancing**
+- O **Service (svc)** do tipo **ClusterIP** é utilizado para expor as aplicações dentro do cluster Kubernetes e para realizar o balanceamento de carga entre os **Pods** que compõem a aplicação.
+
+---
+
+**3️⃣ Deployment e ReplicaSet**
+- A criação e gerenciamento dos **Pods** são realizados por meio de um **Deployment (ds)**, responsável por manter o estado desejado da aplicação.
+- O **ReplicaSet** gerencia o número de réplicas dos Pods, garantindo alta disponibilidade e escalabilidade horizontal.
+
+---
+
+**4️⃣ Horizontal Pod Autoscaler (HPA)**
+- O **HPA (Horizontal Pod Autoscaler)** é utilizado para escalar automaticamente a quantidade de réplicas com base no consumo de recursos como CPU e memória.
+
+---
+
+**5️⃣ ConfigMaps e Secrets**
+- **ConfigMap (cm):** Armazena variáveis de ambiente e configurações não sensíveis da aplicação.
+- **Secret:** Armazena informações sensíveis, como senhas e tokens, garantindo a segurança no acesso aos dados.
+
+---
+
+**6️⃣ Comunicação com Banco de Dados**
+- A aplicação se comunica com o banco de dados através de um **Service (svc)** interno do cluster.
+- O banco de dados roda em um **Pod** próprio, garantindo isolamento e controle de acesso.
+
+---
+
+**7️⃣ Persistent Volumes (PV / PVC)**
+- O **PersistentVolumeClaim (pvc)** é responsável por requisitar volumes persistentes para armazenamento de dados.
+- O **PersistentVolume (pv)** é a ligação com o armazenamento físico subjacente, garantindo a persistência dos dados, mesmo com reinícios dos Pods.
+
+---
+
+**Benefícios da Arquitetura de Implantação Kubernetes**
+
+✅ Escalabilidade automática conforme demanda.  
+✅ Balanceamento de carga eficiente entre réplicas.  
+✅ Isolamento seguro por namespace.  
+✅ Persistência garantida para dados críticos.  
+✅ Configuração de ambiente centralizada e segura.
+
+
+#### DEVOPS com Github Actions integrado ao Dockerhub
+    
+  ![Pipeline](/fase2/docs/DEVOPS.png)
 
 </details> 
 
