@@ -44,6 +44,8 @@ Alguns desses tópicos exigem reescrita de código, refatorações e divisão do
 
 #### Aplicação monolítica .Net Core em Arquitetura Limpa com Banco de Dados Mysql  
 
+  [Repositório privado](https://github.com/fiap-soat11/backend) (branch feature/fase2 ou tag v2)
+
   ![Diagrama de Arquitetura de Software](/fase2/docs/DAS.png)
 
   ---
@@ -99,6 +101,12 @@ Alguns desses tópicos exigem reescrita de código, refatorações e divisão do
     
 #### Diagrama de Implantação com Kubernetes
   
+  [Repositório privado](https://github.com/fiap-soat11/kubernetes) (branch feature/fase2 ou tag v2.)
+
+  **Ambiente de Desenvolvimento - Minikube**
+  ![Kubernetes](/fase2/docs/K8S-Minikube.png)
+
+  **Ambiente de Produção**
   ![Kubernetes](/fase2/docs/K8S.png)
 
 **1️⃣ Acesso Externo via Ingress Controller**
@@ -140,6 +148,14 @@ Alguns desses tópicos exigem reescrita de código, refatorações e divisão do
 
 ---
 
+**Resultados HPA**
+
+![K6-HPA](/fase2/docs/K6-HPA.png)
+
+![K6-Results](/fase2/docs/K6-Results.png)
+
+---
+
 **Benefícios da Arquitetura de Implantação Kubernetes**
 
 ✅ Escalabilidade automática conforme demanda.  
@@ -147,6 +163,7 @@ Alguns desses tópicos exigem reescrita de código, refatorações e divisão do
 ✅ Isolamento seguro por namespace.  
 ✅ Persistência garantida para dados críticos.  
 ✅ Configuração de ambiente centralizada e segura.
+
 
 
 #### DEVOPS com Github Actions integrado ao Dockerhub
