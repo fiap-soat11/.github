@@ -96,9 +96,12 @@ Alguns desses tópicos exigem reescrita de código, refatorações e divisão do
   3. O caso de uso manipula as **Entidades de Negócio (Domain)** conforme a regra definida.
   4. Quando necessário, o caso de uso acessa os dados através dos **Gateways** que se comunicam com a camada de **Datasource**.
   5. A resposta é formatada pelos **Presenters** e devolvida pela API.
+   
+    
+#### DEVOPS com Github Actions integrado ao Dockerhub
+    
+  ![Pipeline](/fase2/docs/DEVOPS.png)
 
-    
-    
 #### Diagrama de Implantação com Kubernetes
   
   [Repositório privado](https://github.com/fiap-soat11/kubernetes) (branch feature/fase2 ou tag v2.)
@@ -164,11 +167,6 @@ Alguns desses tópicos exigem reescrita de código, refatorações e divisão do
 ✅ Persistência garantida para dados críticos.  
 ✅ Configuração de ambiente centralizada e segura.
 
-
-
-#### DEVOPS com Github Actions integrado ao Dockerhub
-    
-  ![Pipeline](/fase2/docs/DEVOPS.png)
 
 </details> 
 
