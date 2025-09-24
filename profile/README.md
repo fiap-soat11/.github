@@ -172,6 +172,52 @@ Alguns desses tópicos exigem reescrita de código, refatorações e divisão do
 
 ### Fase 3
 
+<details>
+
+#### Infraestrutura AWS
+
+  **Diagrama de Infraestrutura na Nuvem AWS**
+    ![AWS](/fase3/aws.png)
+
+  | **Categoria**                             | **Informação Importante**        | **Configuração de Demonstração (Free Tier)**|
+  | ----------------------------------------- | -------------------------------- |----------------------------------------|  
+  | **Rede e Segurança**                      | **Sub-redes**                    | 1 Sub-rede pública (para API Gateway e acesso inicial) e 2 Sub-redes privadas (para Lambda, Kubernetes e RDS).                                   |
+  |                                           | **Security Groups / NACLs**      | API Gateway: HTTPS (443). Lambda e Kubernetes: acesso interno. RDS: porta 3306 liberada apenas para o cluster Kubernetes e Lambda.               |
+  |                                           | **Região e AZs**                 | `us-east-1` (N. Virginia) — mais recursos gratuitos disponíveis. Sub-redes privadas replicadas em `us-east-1a` e `us-east-1b`.                   |
+  |                                           | **Conectividade externa**        | Acesso público controlado via API Gateway + NAT Gateway para recursos privados quando necessário.                                                |
+  | **Escalabilidade e Alta Disponibilidade** | **Auto Scaling**                 | Lambda escala automaticamente (Free Tier: 1 milhão de execuções/mês). Cluster Kubernetes em um único nó gratuito do EKS Fargate ou EC2 t2.micro. |
+  |                                           | **Balanceamento de carga**       | Para demonstração: API Gateway já faz roteamento. Sem ALB/NLB adicional para evitar custos.                                                      |
+  |                                           | **Resiliência**                  | RDS Single-AZ para reduzir custo, backups automáticos habilitados.                                                                               |
+  | **Observabilidade e Monitoramento**       | **Monitoramento**                | CloudWatch gratuito para métricas básicas (5GB logs/mês, 10 alarmes grátis).                                                                     |
+  |                                           | **Alarmes**                      | Alerta de uso de CPU >70% no RDS e no cluster Kubernetes.                                                                                        |
+  |                                           | **Logging**                      | CloudWatch Logs habilitado para Lambda e API Gateway. Logs do Kubernetes exportados para S3 (até 5GB/mês grátis).                                |
+  | **Segurança e Compliance**                | **Gerenciamento de credenciais** | AWS Secrets Manager (até 30 dias grátis) ou AWS Parameter Store gratuito.                                                                        |
+  |                                           | **IAM Roles e Policies**         | Funções mínimas: Lambda com acesso apenas ao RDS e logs. WebAPI com acesso restrito ao banco.                                                    |
+  |                                           | **Criptografia**                 | API Gateway com HTTPS, RDS com encriptação padrão (AES-256).                                                                                     |
+  |                                           | **Auditoria**                    | CloudTrail habilitado para todas as ações de gerenciamento (Primeiros 90 dias grátis).                                                           |
+  | **Custos e Dimensionamento**              | **Tipos de instância**           | **RDS MySQL:** db.t3.micro (750h/mês grátis) <br> **Kubernetes:** EC2 t2.micro (750h/mês grátis) <br> **Lambda:** 1M execuções/mês grátis.       |
+  |                                           | **Previsão de custos**           | Mantendo o uso dentro da camada gratuita, custo estimado: **US\$ 0/mês** (exceto tráfego excessivo de saída ou armazenamento além dos limites).  |
+  | **Fluxos e Dependências**                 | **Fluxo de autenticação**        | Lambda gera tokens JWT assinados e os retorna ao cliente, validade de 15min. Refresh opcional via endpoint seguro.                               |
+  |                                           | **Integrações externas**         | Sem integrações externas para manter ambiente controlado. Opcionalmente, chamadas a APIs públicas gratuitas.                                     |
+
+
+#### Authentication Function com Lambda
+
+  [Repositório serverless](https://github.com/fiap-soat11/serverless)
+
+#### WebAPI no EKS
+
+  [Repositório webapi](https://github.com/fiap-soat11/webapi)
+
+#### Mysql Database no Amazon RDS
+  
+  [Repositório database](https://github.com/fiap-soat11/database)
+
+#### IaC com Terraform
+  
+  [Repositório infra](https://github.com/fiap-soat11/infra)
+
+</details>
 
 ### Fase 4
 
