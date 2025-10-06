@@ -214,7 +214,6 @@ Alguns desses tópicos exigem reescrita de código, refatorações e divisão do
   
   [Repositório infra](https://github.com/fiap-soat11/infra)
 
-### Banco Relacional e MySql
 
 ### Banco Relacional e MySql
 
