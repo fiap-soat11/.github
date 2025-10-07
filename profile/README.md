@@ -1,5 +1,5 @@
 # FIAP Pós Tech - Arquitetura de Software - Tech Challenge  
-Repositórios do projeto em grupo "Tech Challenge" (Grupo 164 da SOAT11 de 2025) do curso de [Arquitetura de Software da FIAP Pós Tech](https://postech.fiap.com.br/curso/software-architecture/).
+Repositórios do projeto em grupo "Tech Challenge" (Grupo 163 da SOAT11 de 2025) do curso de [Arquitetura de Software da FIAP Pós Tech](https://postech.fiap.com.br/curso/software-architecture/).
 
 ## Projeto  
 O objetivo do projeto foi estudar tópicos relacionados à arquitetura de software por meio da criação de um sistema de autoatendimento de fast-food e gerenciamento da cozinha para uma lanchonete fictícia.
