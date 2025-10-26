@@ -218,8 +218,11 @@ Alguns desses tópicos exigem reescrita de código, refatorações e divisão do
 
 ### Fase 4
 
+<details>
 
-### Fase 5
+</details>
+
+### Hackathon
 
 </details>
 
