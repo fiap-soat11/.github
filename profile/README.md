@@ -1,5 +1,5 @@
 # FIAP Pós Tech - Arquitetura de Software - Tech Challenge  
-Repositórios do projeto em grupo "Tech Challenge" (Grupo 164 da SOAT11 de 2025) do curso de [Arquitetura de Software da FIAP Pós Tech](https://postech.fiap.com.br/curso/software-architecture/).
+Repositórios do projeto em grupo "Tech Challenge" (Grupo 163 da SOAT11 de 2025) do curso de [Arquitetura de Software da FIAP Pós Tech](https://postech.fiap.com.br/curso/software-architecture/).
 
 ## Projeto  
 O objetivo do projeto foi estudar tópicos relacionados à arquitetura de software por meio da criação de um sistema de autoatendimento de fast-food e gerenciamento da cozinha para uma lanchonete fictícia.
@@ -213,6 +213,37 @@ Alguns desses tópicos exigem reescrita de código, refatorações e divisão do
 #### IaC com Terraform
   
   [Repositório infra](https://github.com/fiap-soat11/infra)
+
+
+### Banco Relacional e MySql
+
+**Justificativa para Escolha de Banco de Dados Relacional**
+
+Optamos pelo uso de um banco de dados relacional, mais especificamente o MySQL, no projeto da Lanchonete FIAP por entender que este modelo é o mais alinhado às necessidades operacionais e aos objetivos do negócio.
+
+**Estruturação e Integridade dos Dados**
+
+O sistema da lanchonete precisa lidar com informações altamente estruturadas, como clientes, pedidos, pagamentos, produtos e ingredientes. Existe uma forte dependência entre essas entidades, que se relacionam de formas diversas (ex: um pedido pode conter múltiplos produtos; um produto, por sua vez, pode ter vários ingredientes). O banco de dados relacional permite estabelecer essas conexões de maneira precisa, por meio de chaves primárias e estrangeiras, assegurando consistência e integridade em todas as transações.
+
+**Facilidade nas Operações e Consultas Complexas**
+
+Para o dia a dia do negócio, é essencial obter rapidamente informações como histórico de pedidos de um cliente, status atual de cada pedido, composição dos produtos e controle dos pagamentos realizados. O modelo relacional suporta operações de consulta complexas (como consultas com múltiplos filtros e junções entre tabelas), facilitando a extração de dados relevantes para tomada de decisão e relatórios operacionais.
+
+**Suporte à Evolução do Negócio**
+
+À medida que a lanchonete cresce, novas funcionalidades podem ser implementadas facilmente. O modelo relacional é flexível e robusto para aceitar expansão de tabelas, inclusão de novos atributos ou mesmo ajustes em relações, minimizando riscos de inconsistência e sustentando o crescimento do sistema sem prejudicar o legado.
+
+**Controle e Auditoria**
+
+O uso de um banco relacional favorece o controle rigoroso sobre as informações cadastradas no sistema e permite rastrear alterações relevantes, impactando diretamente na rastreabilidade e na segurança da operação. Isso é fundamental para manter a confiabilidade das informações e atender eventuais exigências regulatórias ou de auditoria.
+
+**Padrão de Mercado e Suporte Tecnológico**
+
+A escolha pelo MySQL também se justifica pela sua ampla utilização em sistemas transacionais, além de disponibilizar vasto suporte da comunidade, documentação, ferramentas e profissionais experientes. Trata-se de uma solução open source, com alta confiabilidade, desempenho eficiente e excelente custo-benefício, facilitando ainda futuras integrações com outros sistemas já consolidados no mercado.
+
+**Conclusão:**
+
+A escolha pelo banco de dados relacional MySQL está fundamentada na necessidade de garantir organização, eficiência, segurança e escalabilidade para o sistema da lanchonete, alinhando o ambiente tecnológico com os desafios e oportunidades do negócio.
 
 </details>
 
