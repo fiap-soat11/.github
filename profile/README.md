@@ -12,12 +12,12 @@ A lanchonete pode manter cadastro de clientes; gerenciar produtos e categorias; 
 O projeto, assim como o curso, é dividido em várias 'fases', cada uma abordando tópicos relacionados à arquitetura de software.  
 Alguns desses tópicos exigem reescrita de código, refatorações e divisão dos repositórios.
 
-<details>
+
   <summary>Documentação de cada fase</summary>
 
 ### Fase 1
 
-<details>
+
 
 
   - Aplicação monolítica .Net Core em Arquitetura Hexagonal com Banco de Dados Mysql  
@@ -36,11 +36,11 @@ Alguns desses tópicos exigem reescrita de código, refatorações e divisão do
 
   - [Plano de Testes](/fase1/docs/plano-de-testes.md)
 
-</details> 
+ 
 
 ### Fase 2
 
-<details>
+
 
 #### Aplicação monolítica .Net Core em Arquitetura Limpa com Banco de Dados Mysql  
 
@@ -168,11 +168,11 @@ Alguns desses tópicos exigem reescrita de código, refatorações e divisão do
 ✅ Configuração de ambiente centralizada e segura.
 
 
-</details> 
+ 
 
 ### Fase 3
 
-<details>
+
 
 #### Infraestrutura AWS
 
@@ -245,17 +245,19 @@ A escolha pelo MySQL também se justifica pela sua ampla utilização em sistema
 
 A escolha pelo banco de dados relacional MySQL está fundamentada na necessidade de garantir organização, eficiência, segurança e escalabilidade para o sistema da lanchonete, alinhando o ambiente tecnológico com os desafios e oportunidades do negócio.
 
-</details>
 
-### Fase 4
 
-<details>
+### Fase 4 - Microsservicos
 
-</details>
+  **Arquitetura**
+    ![Arquitetura](/fase4/arch.png)
+
+  **Infra**
+    ![AWS](/fase4/infra.png)
 
 ### Hackathon
 
-</details>
+
 
 ## Versionamento  
 Os repositórios desta organização seguem majoritariamente o versionamento semântico (semver), mas a versão principal corresponde à fase do projeto no momento do commit.  
