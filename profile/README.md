@@ -249,11 +249,103 @@ A escolha pelo banco de dados relacional MySQL está fundamentada na necessidade
 
 ### Fase 4 - Microsservicos
 
+
+
   **Arquitetura**
-    ![Arquitetura](/fase4/arch.png)
+
+  ![Arquitetura](/fase4/arch.png)
+
+---
 
   **Infra**
-    ![AWS](/fase4/infra.png)
+
+  ![AWS](/fase4/infra.png)
+
+  
+#### VPC (Virtual Private Cloud)
+
+- **CIDR:** 172.31.0.0/16  
+Toda a infraestrutura está isolada dentro de uma VPC, garantindo segurança na comunicação entre os serviços internos.
+
+---
+
+#### API Gateway
+
+- Serve como principal ponto de entrada HTTP para clientes externos.
+- Rotas configuradas:
+  - `/auth` → método **POST** → chama **Authentication Lambda**
+  - `/cliente` → método **GET** → chama **Client Lambda**
+  - `/eks/{proxy+}` → método **ANY** do tipo **HTTP_PROXY**
+- Autenticação via header **JWT**
+- Permissões configuradas com política **lambda:InvokeFunction**
+
+---
+
+#### Lambdas
+
+Existem duas funções principais:
+
+1. **Authentication Function (Lambda)**  
+   - Responsável por autenticação de usuários.
+   - Interage com o **DynamoDB** para validação de credenciais e dados.
+
+2. **Client Function (Lambda)**  
+   - Manipula lógica de cliente.
+   - Acessa base de dados conforme necessário.
+
+---
+
+#### Banco de Dados
+
+A solução utiliza dois bancos distintos:
+
+| Tecnologia | Função | Observações |
+|-----------|---------|-------------|
+| DynamoDB  | Clientes & Pedidos | Armazenamento NoSQL, escalabilidade automática |
+| RDS MySQL | Dados relacionais | engine: `mysql 8.0`, classe `db.t3.micro` |
+
+---
+
+#### ECR (Elastic Container Registry)
+
+Repositório privado com imagens Docker utilizadas pelos microsserviços executados no cluster Kubernetes.
+
+Repositórios disponíveis:
+- `fiap-lambda`
+- `fiap-cliente`
+- `fiap-pedido`
+- `fiap-preparo`
+- `fiap-pagamento`
+
+---
+
+#### Cluster Kubernetes – EKS
+
+- Worker nodes configurados em **NodeGroup**
+  - Tipo de instância: `t3.medium`
+  - Disco: 50GB
+  - Mínimo de nós: 1
+  - Máximo de nós: 2
+
+**Recursos Implementados**
+
+- **Deployment e Pods** para cada microsserviço
+- **Local Balancer (Microserviço)**
+- **Autoscaling com base em CPU e memória**
+- **StatefulSet** para serviços com estado
+- **Volumes persistentes (PVC / PV)** para armazenamento
+
+---
+
+#### Microsserviços
+
+- Aplicação executada por meio dos pods do cluster.
+- Balanceamento interno para distribuição equitativa de carga.
+- Quando necessário, o cluster escala automaticamente.
+
+---
+
+
 
 ### Hackathon
 
