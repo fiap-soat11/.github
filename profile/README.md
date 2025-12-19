@@ -250,16 +250,100 @@ A escolha pelo banco de dados relacional MySQL está fundamentada na necessidade
 ### Fase 4 - Microsservicos
 
 
-
   **Arquitetura**
 
   ![Arquitetura](/fase4/arch.png)
+
+  **Microsserviços Implementados:**
+
+  1. **Cliente Service**
+    - Gerencia o cadastro e autenticação de clientes
+    - Expõe endpoints para operações CRUD de clientes
+    - Integra-se com o DynamoDB para persistência de dados
+
+  2. **Pedido Service**
+    - Responsável pela criação e gerenciamento de pedidos
+    - Controla o fluxo desde a seleção de produtos até a confirmação
+    - Comunica-se com outros serviços via mensageria
+
+  3. **Preparo Service**
+    - Gerencia a fila de pedidos na cozinha
+    - Controla os status: Recebido, Em Preparação, Pronto
+    - Notifica outros serviços sobre mudanças de estado
+
+  4. **Pagamento Service**
+    - Processa pagamentos através de gateway externo
+    - Valida e confirma transações financeiras
+    - Atualiza status do pedido após confirmação
+
+  **Comunicação entre Serviços:**
+
+  - **Síncrona:** Via API Gateway e chamadas REST entre microsserviços
+  - **Assíncrona:** Utilização de RabbitMQ (message broker) executado no Kubernetes para desacoplamento e resiliência
+  - **Event-Driven:** Arquitetura orientada a eventos para propagação de mudanças de estado através de filas e exchanges do RabbitMQ
+
+  **Benefícios da Arquitetura:**
+
+  ✅ Escalabilidade independente por serviço  
+  ✅ Deploy isolado sem impacto em outros componentes  
+  ✅ Resiliência através de circuit breakers e fallbacks  
+  ✅ Manutenibilidade facilitada por bounded contexts claros  
+  ✅ Flexibilidade tecnológica (cada serviço pode usar stack diferente)
 
 ---
 
   **Infra**
 
   ![AWS](/fase4/infra.png)
+
+  A infraestrutura foi projetada para garantir alta disponibilidade, escalabilidade e segurança, utilizando serviços gerenciados da AWS e seguindo as melhores práticas de arquitetura de microsserviços.
+
+  **Componentes Principais:**
+
+  **1. Rede e Conectividade**
+  - VPC isolada (172.31.0.0/16) com sub-redes públicas e privadas distribuídas em múltiplas zonas de disponibilidade
+
+  **2. Camada de Entrada**
+  - **API Gateway** como único ponto de entrada para requisições externas
+  - Integração com Lambda Functions para autenticação e operações de cliente
+  - Proxy HTTP configurado para rotear requisições ao cluster EKS
+  - Autenticação baseada em tokens JWT
+
+  **3. Camada de Computação**
+  - **Lambda Functions** para operações serverless (autenticação e cliente)
+  - **EKS (Elastic Kubernetes Service)** gerenciando cluster de microsserviços
+  - **EC2 Node Group** com instâncias t3.medium para workers do Kubernetes
+  - Auto Scaling configurado para ajustar capacidade conforme demanda
+
+  **4. Camada de Persistência**
+  - **DynamoDB** para armazenamento NoSQL de clientes e pedidos
+  - **RDS MySQL 8.0** (db.t3.micro) para dados relacionais em Multi-AZ
+  - **Persistent Volumes** no Kubernetes para dados de aplicação
+
+  **5. Registro e Imagens**
+  - **ECR (Elastic Container Registry)** armazenando imagens Docker dos microsserviços
+  - Repositórios separados para cada microsserviço (cliente, pedido, preparo, pagamento)
+
+  **6. Mensageria e Integração**
+  - **RabbitMQ** executado como StatefulSet no cluster Kubernetes para comunicação assíncrona entre microsserviços
+  - Filas e exchanges dedicados para cada fluxo de eventos
+  - Persistent Volume para garantir durabilidade das mensagens
+  - Management UI para monitoramento e administração das filas
+
+  **7. Segurança**
+  - **IAM Roles** com permissões específicas para cada recurso
+  - **Security Groups** controlando tráfego de entrada e saída
+  - Recursos críticos em sub-redes privadas sem acesso direto à internet
+  - Criptografia em trânsito e em repouso
+
+  **Fluxo de Requisição:**
+
+  1. Cliente externo acessa via API Gateway (HTTPS)
+  2. API Gateway valida JWT e roteia para Lambda ou EKS
+  3. Lambdas processam autenticação/cliente consultando DynamoDB
+  4. Requisições de negócio são direcionadas aos microsserviços no EKS
+  5. Microsserviços comunicam-se via RabbitMQ (executado no cluster) e acessam bancos de dados conforme necessário
+  6. Respostas retornam pelo mesmo caminho até o cliente
 
   
 #### VPC (Virtual Private Cloud)
@@ -337,11 +421,24 @@ Repositórios disponíveis:
 
 ---
 
+#### RabbitMQ (Message Broker)
+
+**Deployment no Kubernetes**
+
+- Executado como **StatefulSet** para garantir identidade estável dos pods
+- Imagem oficial: `rabbitmq:3-management`
+- **Portas expostas:**
+  - `5672` - Protocolo AMQP para comunicação dos microsserviços
+  - `15672` - Management UI para administração
+
+---
+
 #### Microsserviços
 
 - Aplicação executada por meio dos pods do cluster.
 - Balanceamento interno para distribuição equitativa de carga.
 - Quando necessário, o cluster escala automaticamente.
+- Integração com RabbitMQ via bibliotecas AMQP client (.NET: RabbitMQ.Client)
 
 ---
 
