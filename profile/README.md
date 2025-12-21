@@ -344,7 +344,6 @@ A escolha pelo banco de dados relacional MySQL está fundamentada na necessidade
   4. Requisições de negócio são direcionadas aos microsserviços no EKS
   5. Microsserviços comunicam-se via RabbitMQ (executado no cluster) e acessam bancos de dados conforme necessário
   6. Respostas retornam pelo mesmo caminho até o cliente
-
   
 #### VPC (Virtual Private Cloud)
 
@@ -387,6 +386,14 @@ A solução utiliza dois bancos distintos:
 |-----------|---------|-------------|
 | DynamoDB  | Clientes & Pedidos | Armazenamento NoSQL, escalabilidade automática |
 | RDS MySQL | Dados relacionais | engine: `mysql 8.0`, classe `db.t3.micro` |
+
+  **Modelo Relacional**
+
+  ![BD relacional](/fase4/BD_relacional.png)
+
+  **Modelo NoSql**
+
+  ![BD NoSql](/fase4/BD_nosql.png)
 
 ---
 
