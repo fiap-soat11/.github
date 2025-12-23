@@ -256,22 +256,26 @@ A escolha pelo banco de dados relacional MySQL está fundamentada na necessidade
 
   **Microsserviços Implementados:**
 
-  1. **Cliente Service**
+  1. **Cliente Service** (https://github.com/fiap-soat11/serverless/tree/release/fase4)
+
     - Gerencia o cadastro e autenticação de clientes
     - Expõe endpoints para operações CRUD de clientes
     - Integra-se com o DynamoDB para persistência de dados
 
-  2. **Pedido Service**
+  2. **Pedido Service** (https://github.com/fiap-soat11/pedido_microsservico/tree/release/fase4)
+
     - Responsável pela criação e gerenciamento de pedidos
     - Controla o fluxo desde a seleção de produtos até a confirmação
     - Comunica-se com outros serviços via mensageria
 
-  3. **Preparo Service**
+  3. **Preparo Service** (https://github.com/fiap-soat11/preparo_microsservico/tree/release/fase4)
+
     - Gerencia a fila de pedidos na cozinha
     - Controla os status: Recebido, Em Preparação, Pronto
     - Notifica outros serviços sobre mudanças de estado
 
-  4. **Pagamento Service**
+  4. **Pagamento Service** (https://github.com/fiap-soat11/pagamento_microsservico/tree/release/fase4)
+
     - Processa pagamentos através de gateway externo
     - Valida e confirma transações financeiras
     - Atualiza status do pedido após confirmação
@@ -295,6 +299,8 @@ A escolha pelo banco de dados relacional MySQL está fundamentada na necessidade
   **Infra**
 
   ![AWS](/fase4/infra.png)
+
+  (https://github.com/fiap-soat11/infra/tree/release/fase4)
 
   A infraestrutura foi projetada para garantir alta disponibilidade, escalabilidade e segurança, utilizando serviços gerenciados da AWS e seguindo as melhores práticas de arquitetura de microsserviços.
 
