@@ -459,7 +459,7 @@ Repositórios disponíveis:
 
 ### Hackathon
 
-
+[Documentação do Hackathon](/hack/README.md)
 
 ## Versionamento  
 Os repositórios desta organização seguem majoritariamente o versionamento semântico (semver), mas a versão principal corresponde à fase do projeto no momento do commit.  
