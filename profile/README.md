@@ -464,9 +464,6 @@ Repositórios disponíveis:
 ## Versionamento  
 Os repositórios desta organização seguem majoritariamente o versionamento semântico (semver), mas a versão principal corresponde à fase do projeto no momento do commit.  
 
-## Hackaton  
-
-
 ## Integrantes do grupo
 - [AdinaildoRibeiro](https://github.com/AdinaildoRibeiro)
 - [EderGRocha](https://github.com/EderGRocha)
