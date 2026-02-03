@@ -167,4 +167,98 @@ Esta arquitetura suporta os requisitos do projeto:
 - ✅ Listagem de status: Query por `user_id` para visualizar todos os processamentos
 - ✅ Notificação de erros: Campo `failure_reason` armazena detalhes para envio de alertas
 
+### Fluxo da informação
+
+
+```mermaid
+flowchart TD
+   Start([Cliente inicia requisição]) --> Auth{Autenticado?}
+   Auth -->|Não| Login[POST /auth/login<br/>email + password]
+   Login --> ValidaCred{Credenciais<br/>válidas?}
+   ValidaCred -->|Não| ErrAuth[Retorna 401 Unauthorized]
+   ValidaCred -->|Sim| GeraToken[Gera JWT Token]
+   GeraToken --> AuthOK
+   Auth -->|Sim| AuthOK[Token JWT válido]
+   
+   AuthOK --> Acao{Escolhe ação}
+   
+   Acao -->|Upload| Upload[POST /videos/upload<br/>Envia arquivo de vídeo]
+   Upload --> SaveS3[Salva vídeo no S3<br/>s3_input_path]
+   SaveS3 --> CreateRecord[Cria registro em<br/>video_processings<br/>status: Pending]
+   CreateRecord --> Queue[Envia para fila<br/>de processamento]
+   Queue --> ReturnUpload[Retorna 202 Accepted<br/>com video_id]
+   
+   Acao -->|Listar| List[GET /videos<br/>Lista vídeos do usuário]
+   List --> QueryDB[Query: SELECT * FROM<br/>video_processings<br/>WHERE user_id = ?]
+   QueryDB --> ReturnList[Retorna JSON com lista<br/>id, status, created_at, etc]
+   
+   Acao -->|Download| Download[GET /videos/:id/download]
+   Download --> CheckStatus{Status =<br/>Completed?}
+   CheckStatus -->|Não| ErrNotReady[Retorna 400<br/>Vídeo não processado]
+   CheckStatus -->|Sim| GetS3[Obtém arquivo do S3<br/>usando s3_output_path]
+   GetS3 --> ReturnZip[Retorna arquivo ZIP<br/>com frames extraídos]
+   
+   Queue --> Worker[Worker processa vídeo]
+   Worker --> UpdateProcessing[UPDATE status = Processing]
+   UpdateProcessing --> ExtractFrames[Extrai frames do vídeo]
+   ExtractFrames --> CreateZip[Cria arquivo ZIP<br/>com imagens]
+   CreateZip --> UploadZip[Upload ZIP para S3<br/>salva s3_output_path]
+   UploadZip --> Success{Sucesso?}
+   
+   Success -->|Sim| UpdateCompleted[UPDATE status = Completed<br/>completed_at = NOW]
+   Success -->|Não| UpdateFailed[UPDATE status = Failed<br/>failure_reason = erro]
+   UpdateFailed --> Notify[Envia notificação<br/>de erro ao usuário]
+   
+   UpdateCompleted --> End([Fim])
+   ReturnUpload --> End
+   ReturnList --> End
+   ReturnZip --> End
+   ErrAuth --> End
+   ErrNotReady --> End
+   Notify --> End
+   
+   style Start fill:#90EE90
+   style End fill:#FFB6C1
+   style UpdateCompleted fill:#90EE90
+   style UpdateFailed fill:#FF6B6B
+   style ErrAuth fill:#FF6B6B
+   style ErrNotReady fill:#FF6B6B
+```
+
+#### Descrição do Fluxo
+
+**1. Autenticação:**
+- Cliente tenta acessar o sistema
+- Se não autenticado, realiza login com email/senha
+- Sistema valida credenciais na tabela `users`
+- Gera token JWT para autenticação subsequente
+
+**2. Upload de Vídeo:**
+- Cliente envia vídeo via POST /videos/upload
+- Sistema salva arquivo no S3 (s3_input_path)
+- Cria registro em `video_processings` com status `Pending`
+- Adiciona job na fila de processamento
+- Retorna imediatamente com HTTP 202 (requisição aceita mas não processada)
+
+**3. Processamento Assíncrono:**
+- Worker retira job da fila
+- Atualiza status para `Processing`
+- Extrai frames do vídeo
+- Cria arquivo ZIP com as imagens
+- Faz upload do ZIP para S3 (s3_output_path)
+- Atualiza status para `Completed` ou `Failed`
+- Em caso de falha, envia notificação ao usuário
+
+**4. Listagem de Status:**
+- Cliente consulta GET /videos
+- Sistema busca todos os registros do usuário em `video_processings`
+- Retorna lista com status atual de cada processamento
+
+**5. Download do Resultado:**
+- Cliente solicita GET /videos/:id/download
+- Sistema verifica se status = `Completed`
+- Se sim, busca arquivo ZIP do S3 e retorna
+- Se não, retorna erro 400 informando que processamento não finalizou
+
+Este fluxo garante processamento assíncrono de múltiplos vídeos, tolerância a picos de demanda via fila, e rastreamento completo do status de cada processamento.
 
