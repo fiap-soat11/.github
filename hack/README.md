@@ -260,5 +260,272 @@ flowchart TD
 - Se sim, busca arquivo ZIP do S3 e retorna
 - Se não, retorna erro 400 informando que processamento não finalizou
 
-Este fluxo garante processamento assíncrono de múltiplos vídeos, tolerância a picos de demanda via fila, e rastreamento completo do status de cada processamento.
+Este fluxo garante processamento assíncrono de múltiplos vídeos, tolerância a picos de demanda via fila, 
+e rastreamento completo do status de cada processamento.
+
+LOGICA DE NEGÓCIO COMPLETA – PROJETO FIAP X (PROCESSAMENTO DE VÍDEO)
+
+1. ENTIDADES DO DOMÍNIO + REGRAS
+
+📌 Entidade: User
+Atributos
+- id
+- name
+- email
+- passwordHash
+- createdAt
+- updatedAt
+
+Regras de Domínio
+- email deve ser único
+- senha nunca pode ser salva sem hash
+- usuário só acessa seus próprios vídeos
+- ao deletar usuário, todos os vídeos dele devem ser removidos (ON DELETE CASCADE)
+
+📌 Entidade: VideoProcessing
+Atributos
+- id
+- userId
+- originalFileName
+- status (Pending | Processing | Completed | Failed)
+- s3InputPath
+- s3OutputPath
+- failureReason
+- createdAt
+- completedAt
+
+Regras de Domínio
+- status inicial sempre = Pending
+- se status = Completed → s3OutputPath não pode ser null
+- se status = Failed → failureReason deve ter texto
+- completedAt só pode ser preenchida se finalizado (completed ou failed)
+- nunca reprocessar um vídeo Completed sem criar um novo registro
+
+🟧 2. CASOS DE USO (USE CASES)
+AuthenticateUser
+UploadVideo
+StartVideoProcessingJob (worker)
+ProcessVideoFrames (worker)
+GenerateZipFile (worker)
+MarkProcessingCompleted
+MarkProcessingFailed
+ListUserVideos
+DownloadProcessedZip
+
+🟧 3. REGRAS DE NEGÓCIO POR CASO DE USO
+1️⃣ AuthenticateUser (Login)
+* Entrada: email, password
+* Saída: JWT token
+
+Regras
+- email deve existir
+- password → comparar hash
+- se falhar, retornar erro de credenciais
+- gerar JWT
+- token expira (ex: 1h)
+
+2️⃣ UploadVideo (POST /videos/upload)
+* Entrada: arquivo de vídeo, userId
+* Saída: id do processamento, status = Pending
+
+Regras
+- aceitar apenas formatos permitidos (mp4, mov, avi)
+- enviar vídeo para S3 → gerar s3InputPath
+- criar registro VideoProcessing com:
+  status = Pending
+  s3OutputPath = null
+  failureReason = null
+- adicionar job na fila (ex.: SQS/Kafka)
+- retornar HTTP 202 (Accepted)
+
+3️⃣ StartVideoProcessingJob (Worker – início do job)
+* Entrada: videoProcessingId
+
+Regras
+- validar se status atual é Pending
+- atualizar status para Processing
+- atualizar timestamp de início (opcional)
+- chamar processamento real
+
+4️⃣ ProcessVideoFrames (Worker – extrair frames)**
+
+Regras
+- baixar arquivo de vídeo do S3 (s3InputPath)
+- extrair frames
+- salvar frames em diretório temporário
+- se falhar → emitir evento “ProcessingFailed”
+
+5️⃣ GenerateZipFile (Worker – compactar frames)**
+
+Regras
+- zipar todas as imagens
+- enviar ZIP final ao S3
+- gerar s3OutputPath
+- se falhar → emitir evento “ProcessingFailed”
+
+6️⃣ MarkProcessingCompleted
+* Entrada: videoProcessingId, s3OutputPath
+
+Regras
+- status = Completed
+- completedAt = agora
+- failureReason = null
+
+7️⃣ MarkProcessingFailed
+* Entrada: videoProcessingId, reason
+
+Regras
+- status = Failed
+- failureReason obrigatório
+- completedAt = agora
+- enviar notificação ao usuário (email)
+
+8️⃣ ListUserVideos (GET /videos)
+* Entrada: userId
+* Saída: lista de VideoProcessing
+
+Regras
+- usuário só pode listar os vídeos dele
+- retorno deve incluir status atual
+- vídeos ordenados por data
+
+9️⃣ DownloadProcessedZip (GET /videos/:id/download)
+* Entrada: videoProcessingId, userId
+
+Regras
+- registro deve existir
+- registro deve ser do usuário
+- status deve ser Completed
+- se não for Completed → erro “Processing not finished”
+- baixar arquivo do S3 e retornar
+
+🟦 4. FLUXO COMPLETO DE NEGÓCIO
+📌 Fluxo 1 – Login
+- usuário envia email/senha
+- sistema valida credenciais
+- se OK → gera JWT
+- usuário usa JWT nas próximas requisições
+
+📌 Fluxo 2 – Upload de vídeo
+- cliente envia vídeo
+- WebAPI valida extensão
+- salva arquivo no S3 → gera s3InputPath
+- cria registro em video_processings com status Pending
+- envia job para fila
+- retorna 202 para o cliente
+
+📌 Fluxo 3 – Processamento assíncrono
+- worker lê job
+- muda status para Processing
+- baixa vídeo do S3
+- extrai frames
+- gera ZIP
+- envia ZIP ao S3 → s3OutputPath
+- salva status Completed
+- se erro:
+  - status Failed
+  - failureReason preenchido
+  - notificar usuário
+
+📌 Fluxo 4 – Listar vídeos
+- usuário chama GET /videos
+- sistema busca todos registros onde userId = usuário
+- retorna lista + status
+
+📌 Fluxo 5 – Baixar ZIP
+- usuário chama /download
+- sistema verifica:
+  - usuário dono?
+  - status Completed?
+- se OK → baixa ZIP do S3
+- retorna arquivo
+
+🟥 5. ERROS DE NEGÓCIO (DOMAIN ERRORS)
+- UserNotFound
+- InvalidCredentials
+- UnsupportedFileFormat
+- VideoNotFound
+- VideoNotBelongsToUser
+- ProcessingNotFinished
+- ProcessingAlreadyFinished
+- StorageError
+- NotificationError
+
+🟩 6. EVENTOS DE DOMÍNIO
+- VideoUploaded
+- ProcessingStarted
+- FramesExtracted
+- ZipGenerated
+- ProcessingCompleted
+- ProcessingFailed
+
+🟪 7. RESUMO – LÓGICA DE NEGÓCIO
+. Lógica de Negócio – FIAP X Video Processing
+. Usuários devem autenticar com email/senha para acessar qualquer recurso.
+. O upload de vídeo gera um registro de processamento com status inicial Pending.
+. Cada vídeo é processado de forma assíncrona, permitindo múltiplos processamentos simultâneos.
+. Um worker atualiza o status conforme o vídeo progride:
+. Pending → Processing → Completed ou Failed
+. O resultado do processamento (frames ZIP) é armazenado no S3 e vinculado ao registro.
+. O usuário pode listar todos os processamentos e seus respectivos status.
+. O download só é permitido se o status for Completed.
+. Em caso de falha, o usuário deve ser notificado e o motivo registrado.
+
+Core Business Logic & Architectural Constraints
+Esta seção descreve as diretrizes fundamentais que regem o comportamento do ecossistema FIAP X, 
+garantindo a integridade dos dados, a segurança multi-inquilino (multi-tenancy) e a resiliência operacional.
+
+1. Segurança e Governança de Acesso
+- Identidade e Proteção (IAM): O acesso a qualquer recurso da plataforma é estritamente condicionado à autenticação via JWT (JSON Web Token).
+  Credenciais sensíveis (senhas) devem ser persistidas utilizando algoritmos de hashing com salt (ex: BCrypt ou Argon2) para mitigar ataques de dicionário.
+- Isolamento de Dados (Tenant Isolation): O sistema opera sob uma política rigorosa de Ownership. Um usuário autenticado possui visibilidade e autoridade 
+  exclusivamente sobre seus próprios registros e arquivos. Tentativas de acesso a video_id de terceiros devem ser interceptadas e resultar em 403 Forbidden.
+
+2. Ciclo de Vida e Máquina de Estados (State Machine)
+O processamento de vídeo é tratado como uma transação de longa duração, governada por uma máquina de estados finitos para garantir a consistência eventual:
+- Pending: Estado inicial. O artefato foi recebido no Object Storage (S3) e o evento de processamento foi enfileirado.
+- Processing: O Worker assumiu a custódia do job. Neste estágio, o recurso está bloqueado para novas tentativas de processamento simultâneo.
+- Completed: Estado terminal de sucesso. O artefato de saída (ZIP) está disponível e o completed_at é registrado.
+- Failed: Estado terminal de erro. O motivo da falha (Reason) deve ser persistido para fins de auditoria e feedback ao usuário.
+
+3. Resiliência e Ingestão de Carga
+- Desacoplamento por Mensageria: Para suportar picos de demanda sem perda de requisições, a WebAPI não processa vídeos diretamente.
+  Ela atua apenas como produtor de eventos. A carga de trabalho é delegada a Workers assíncronos, garantindo que a API permaneça responsiva sob pressão.
+- Backpressure & Scalability: O sistema utiliza os princípios de Horizontal Pod Autoscaling (HPA) no Kubernetes. A capacidade de processamento deve escalar
+  linearmente conforme o volume da fila de mensagens aumenta.
+
+4. Estratégia de Persistência Híbrida
+- Metadados Relacionais: Informações estruturadas, relações de propriedade e logs de status são armazenados no RDS MySQL, garantindo conformidade ACID para transações de estado.
+- Unstructured Blob Storage: Vídeos originais e arquivos ZIP finais são armazenados no Amazon S3. A base de dados armazena apenas os S3 Paths (URIs), evitando o overhead de
+- armazenamento de binários no banco de dados relacional.
+
+5. Notificação e Observabilidade
+- Fluxo de Notificação Proativo: Em cenários de falha técnica ou de violação de formato de arquivo, o sistema deve disparar um evento de notificação (via SMTP ou Webhook) para
+  informar o usuário final, reduzindo a fricção e o suporte manual.
+- Integridade de Download: O acesso ao arquivo processado é condicionado ao estado Completed. Solicitações de download para estados intermediários devem ser rejeitadas para
+  evitar inconsistências de arquivo corrompido ou incompleto.
+
+📂 Definição de Endpoints (Technical Specs)
+Seguindo o padrão de Arquitetura Hexagonal, a camada de Adaptores de Entrada expõe os seguintes contratos:
+
+Auth Interface
+- POST /auth/register: Criação de identidade.
+- POST /auth/login: Troca de credenciais por Token de acesso.
+
+Video Management (Async Context)
+- POST /videos/upload: Ingestão de binário. Retorna 202 Accepted.
+  - Constraint: Apenas formatos suportados (ex: .mp4, .mkv) são aceitos.
+- GET /videos: Query de telemetria. Retorna a lista de processamentos e seus respectivos status atuais.
+- GET /videos/:id/download: Recuperação de artefato.
+  - Logic: Se status != Completed, retorna 400 Bad Request. Se user_id != owner, retorna 403 Forbidden.
+
+🛠️ Procedimento de Execução (Architect's View)
+A infraestrutura é tratada como código (IaC). Para replicar o ambiente:
+- Provisionamento da Infra: Certifique-se de que o Cluster EKS e a instância RDS estão acessíveis via VPC.
+- Container Registry: As imagens devem ser buildadas e enviadas ao Amazon ECR:
+  . docker build -t fiapx/webapi .
+  . docker push [aws_account_id].dkr.ecr.[region].amazonaws.com/fiapx-webapi
+- Deployment via Helm/Kubectl:
+  . kubectl apply -f ./k8s/secrets.yaml
+  . kubectl apply -f ./k8s/deployment.yaml
 
