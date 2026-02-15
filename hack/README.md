@@ -263,7 +263,7 @@ flowchart TD
 Este fluxo garante processamento assíncrono de múltiplos vídeos, tolerância a picos de demanda via fila, 
 e rastreamento completo do status de cada processamento.
 
-LOGICA DE NEGÓCIO COMPLETA – PROJETO FIAP X (PROCESSAMENTO DE VÍDEO)
+LOGICA DE NEGÓCIO – PROJETO FIAP X (PROCESSAMENTO DE VÍDEO)
 
 1. ENTIDADES DO DOMÍNIO + REGRAS
 
